@@ -1,0 +1,25 @@
+[project]
+name = "cloudy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Michael", email = "michaelobiekwe@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aiosqlite>=0.22.1",
+    "cloudinary>=1.46.3",
+    "fastapi>=0.143.0",
+    "fastapi-users[sqlalchemy]>=15.0.5",
+    "python-dotenv>=1.2.4",
+    "python-multipart>=0.0.32",
+    "uvicorn[standard]>=0.54.0",
+]
+
+[project.scripts]
+cloudy = "cloudy:main"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
