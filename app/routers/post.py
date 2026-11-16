@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+import uuid
+
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.db import get_db
@@ -38,3 +40,28 @@ async def get_my_posts(
 async def get_single_post(post_id: str, db: AsyncSession = Depends(get_db)):
     service = PostService(db)
     return await service.get_post_by_id(post_id)
+
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(
+    post_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(current_active_user)
+):
+    service = PostService(db)
+    post = await service.get_post_by_id(str(post_id))
+
+    if not post:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Post not found."
+        )
+
+
+
+    if str(post.user_id) != str(user.id):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this post."
+        )
+
+    await service.delete_post(str(post_id))

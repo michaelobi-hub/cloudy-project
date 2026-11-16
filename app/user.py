@@ -18,6 +18,7 @@ from app.schemas.user import UserCreate
 load_dotenv()
 
 SECRET = os.getenv("SECRET", "SUPER_SECRET_KEY")
+TOKEN_LIFETIME_SECONDS = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS", 7200))
 password_hash = PasswordHash.recommended()
 
 
@@ -54,7 +55,7 @@ bearer_transport = BearerTransport(tokenUrl="/api/v1/auth/jwt/login")
 
 
 def get_jwt_strategy() -> JWTStrategy:
-    return JWTStrategy(secret=SECRET, lifetime_seconds=3600)
+    return JWTStrategy(secret=SECRET, lifetime_seconds=TOKEN_LIFETIME_SECONDS)
 
 
 auth_backend = AuthenticationBackend(

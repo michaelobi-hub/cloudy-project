@@ -53,3 +53,8 @@ class PostService:
                 detail=f"Post with ID {post_id} not found"
             )
         return post
+
+    async def delete_post(self, post_id: str):
+        post = await self.get_post_by_id(post_id)
+        await self.db.delete(post)
+        await self.db.commit()
