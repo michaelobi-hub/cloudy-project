@@ -1,35 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from fastapi import HTTPException, status, UploadFile, APIRouter
-from typing import Optional, Union, List
+from fastapi import HTTPException, status
 import uuid
 
 from app.models.farmer import FarmerModel, FarmModel
 from app.schemas.farmer import FarmerCreate, FarmCreate
-from app.utils.cloudinary import upload_file_to_cloudinary
-
-
-router = APIRouter(prefix="/farmers", tags=["Farmers & Farms"])
-
 class FarmerService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def create_farmer(self, data: FarmerCreate, file: Optional[UploadFile] = None):
-        photo_url = None
-        if file:
-            photo_url = await upload_file_to_cloudinary(file)
-
-        new_farmer = FarmerModel(
-            photo_url=photo_url,
-            **data.model_dump()
-        )
+    async def create_farmer(self, data: FarmerCreate):
+        new_farmer = FarmerModel(**data.model_dump())
 
         self.db.add(new_farmer)
         await self.db.commit()
-        await self.db.refresh(new_farmer)
-        return new_farmer
+        return await self.get_farmer_by_id(new_farmer.id)
 
     async def get_all_farmers(self):
         result = await self.db.execute(

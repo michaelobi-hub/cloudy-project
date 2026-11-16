@@ -43,8 +43,3 @@ async def add_farm(
 ):
     service = FarmerService(db)
     return await service.add_farm_to_farmer(farmer_id, data)
-
-@router.get("/", response_model=List[FarmResponse])
-async def get_farm(db: AsyncSession = Depends(get_db)):
-    service = FarmerService(db)
-    return await service.get_all_farms()

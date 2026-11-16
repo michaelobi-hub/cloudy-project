@@ -70,6 +70,7 @@ class FarmerRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     date_added: Optional[str] = None
+    farms: list[FarmRead] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True)
 

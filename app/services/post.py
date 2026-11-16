@@ -25,19 +25,26 @@ class PostService:
         await self.db.commit()
         await self.db.refresh(new_post)
 
-        return new_post
+        result = await self.db.execute(
+            select(Post).options(selectinload(Post.user)).where(Post.id == new_post.id)
+        )
+        return result.scalar_one()
 
     async def get_all_posts(self):
         stmt = select(Post).options(selectinload(Post.user))
-        result = await self.db.execute(select(Post))
+        result = await self.db.execute(stmt)
         return result.scalars().all()
 
     async def get_user_posts(self, user_id: str):
-        result = await self.db.execute(select(Post).where(Post.user_id == str(user_id)))
+        result = await self.db.execute(
+            select(Post).options(selectinload(Post.user)).where(Post.user_id == str(user_id))
+        )
         return result.scalars().all()
     
     async def get_post_by_id(self, post_id: str):
-        result = await self.db.execute(select(Post).where(Post.id == post_id))
+        result = await self.db.execute(
+            select(Post).options(selectinload(Post.user)).where(Post.id == post_id)
+        )
         post = result.scalar_one_or_none()
         
         if not post:
